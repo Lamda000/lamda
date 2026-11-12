@@ -5,47 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lambda</title>
   <style>
-    /* 無彩色トーンのミニマルなUIデザイン */
+    /* 緑を基調としたデザイン */
     body {
-      background-color: #f7f7f7;
-      color: #333;
+      background-color: #e8f5e9; /* 淡く落ち着いた緑の背景 */
+      color: #1b5e20;
       font-family: 'Helvetica Neue', Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
+      overflow: hidden; /* 黒猫が画面外から来るための設定 */
     }
     .search-box {
       background: #ffffff;
       padding: 40px;
       border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.1); /* 影も少し緑色に */
       text-align: center;
+      position: relative;
+      z-index: 10;
     }
     h2 {
       margin-top: 0;
       margin-bottom: 24px;
       font-size: 22px;
-      color: #555;
+      color: #2e7d32; /* 深みのある緑 */
       letter-spacing: 2px;
       font-weight: 500;
     }
     input[type="text"] {
       width: 280px;
       padding: 12px 16px;
-      border: 1px solid #e0e0e0;
+      border: 1px solid #a5d6a7;
       border-radius: 4px;
       font-size: 16px;
       outline: none;
       transition: border-color 0.3s;
     }
     input[type="text"]:focus {
-      border-color: #999;
+      border-color: #4caf50; /* フォーカス時に鮮やかな緑に */
     }
     button {
       padding: 12px 24px;
-      background-color: #555;
+      background-color: #4caf50;
       color: #fff;
       border: none;
       border-radius: 4px;
@@ -55,7 +58,28 @@
       transition: background-color 0.3s;
     }
     button:hover {
-      background-color: #333;
+      background-color: #388e3c;
+    }
+
+    /* 黒猫のイースターエッグ用スタイル */
+    #black-cat {
+      position: absolute;
+      bottom: 30px;
+      right: -100px;
+      font-size: 48px;
+      z-index: 20;
+      display: none; /* 普段は隠しておく */
+    }
+    
+    /* 黒猫が歩くアニメーション（右から左へ5秒かけて移動） */
+    @keyframes walkAcross {
+      0% { right: -100px; transform: scaleX(1); }
+      100% { right: 100vw; transform: scaleX(1); }
+    }
+    
+    .walking {
+      display: block !important;
+      animation: walkAcross 5s linear forwards;
     }
   </style>
 </head>
@@ -69,16 +93,34 @@
     </form>
   </div>
 
+  <!-- 隠し要素の黒猫 -->
+  <div id="black-cat">🐈‍⬛</div>
+
   <script>
-    // ▼ 以下のURLを、手順で取得したGASのウェブアプリURLに書き換えてください ▼
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbyoYLzNQgNcz9UEjvPcr_gyAOyeh-1N-u8KY7s-9sVleo-Sl7JWi6AfpPkcsXVrlz_7cg/exec";
+    // ▼ 以下のURLを、GASのウェブアプリURLに書き換えてください ▼
+    const GAS_URL = "YOUR_GAS_WEB_APP_URL";
 
     document.getElementById('searchForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
-      const modelNumber = document.getElementById('modelNumber').value;
+      const modelNumber = document.getElementById('modelNumber').value.trim();
       
-      // 1. Google検索を別タブで開く
+      // --- イースターエッグのギミック ---
+      // "Green"（または green など小文字混じり）が入力された場合
+      if (modelNumber.toLowerCase() === 'green') {
+        const cat = document.getElementById('black-cat');
+        
+        // アニメーションをリセットして何度でも発動できるようにする
+        cat.classList.remove('walking');
+        void cat.offsetWidth; 
+        cat.classList.add('walking');
+        
+        document.getElementById('modelNumber').value = ''; // 検索窓を空にする
+        return; // ここで処理を止める（スプレッドシートやGoogle検索は動かさない）
+      }
+      // ----------------------------------
+
+      // 1. 通常のGoogle検索を別タブで開く
       const searchQuery = encodeURIComponent(modelNumber + " 取扱説明書 filetype:pdf");
       const searchUrl = "https://www.google.com/search?q=" + searchQuery;
       window.open(searchUrl, '_blank');
