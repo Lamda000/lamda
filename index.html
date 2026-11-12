@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lambda</title>
+  <title>ラムダ</title>
   <style>
-    /* 緑を基調としたデザイン */
+    /* 緑を基調としたミニマルデザイン */
     body {
-      background-color: #e8f5e9; /* 淡く落ち着いた緑の背景 */
+      background-color: #e8f5e9;
       color: #1b5e20;
       font-family: 'Helvetica Neue', Arial, sans-serif;
       display: flex;
@@ -15,27 +15,33 @@
       align-items: center;
       height: 100vh;
       margin: 0;
-      overflow: hidden; /* 黒猫が画面外から来るための設定 */
+      overflow: hidden;
     }
     .search-box {
       background: #ffffff;
       padding: 40px;
       border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.1); /* 影も少し緑色に */
+      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.1);
       text-align: center;
       position: relative;
       z-index: 10;
+      width: 320px;
     }
     h2 {
       margin-top: 0;
       margin-bottom: 24px;
-      font-size: 22px;
-      color: #2e7d32; /* 深みのある緑 */
+      font-size: 24px;
+      color: #2e7d32;
       letter-spacing: 2px;
       font-weight: 500;
     }
+    .input-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
     input[type="text"] {
-      width: 280px;
+      width: 100%;
+      box-sizing: border-box;
       padding: 12px 16px;
       border: 1px solid #a5d6a7;
       border-radius: 4px;
@@ -44,18 +50,20 @@
       transition: border-color 0.3s;
     }
     input[type="text"]:focus {
-      border-color: #4caf50; /* フォーカス時に鮮やかな緑に */
+      border-color: #4caf50;
     }
     button {
+      width: 100%;
       padding: 12px 24px;
       background-color: #4caf50;
       color: #fff;
       border: none;
       border-radius: 4px;
       font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
-      margin-left: 8px;
       transition: background-color 0.3s;
+      margin-top: 8px;
     }
     button:hover {
       background-color: #388e3c;
@@ -68,10 +76,9 @@
       right: -100px;
       font-size: 48px;
       z-index: 20;
-      display: none; /* 普段は隠しておく */
+      display: none;
     }
     
-    /* 黒猫が歩くアニメーション（右から左へ5秒かけて移動） */
     @keyframes walkAcross {
       0% { right: -100px; transform: scaleX(1); }
       100% { right: 100vw; transform: scaleX(1); }
@@ -86,9 +93,14 @@
 <body>
 
   <div class="search-box">
-    <h2>Lambda</h2>
+    <h2>ラムダ</h2>
     <form id="searchForm">
-      <input type="text" id="modelNumber" placeholder="品番を入力 (例: CS-220DFL)" required>
+      <div class="input-group">
+        <input type="text" id="modelNumber" placeholder="品番 (例: CS-220DFL)" required>
+      </div>
+      <div class="input-group">
+        <input type="text" id="searchTerm" placeholder="調べたい用語 (例: エラー H11)">
+      </div>
       <button type="submit">検索</button>
     </form>
   </div>
@@ -97,32 +109,39 @@
   <div id="black-cat">🐈‍⬛</div>
 
   <script>
-    // ▼ 以下のURLを、GASのウェブアプリURLに書き換えてください ▼
-    const GAS_URL = "YOUR_GAS_WEB_APP_URL";
+    // ▼ GASのウェブアプリURLに書き換えてください ▼
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyoYLzNQgNcz9UEjvPcr_gyAOyeh-1N-u8KY7s-9sVleo-Sl7JWi6AfpPkcsXVrlz_7cg/exec";
 
     document.getElementById('searchForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
       const modelNumber = document.getElementById('modelNumber').value.trim();
+      const searchTerm = document.getElementById('searchTerm').value.trim();
       
-      // --- イースターエッグのギミック ---
-      // "Green"（または green など小文字混じり）が入力された場合
-      if (modelNumber.toLowerCase() === 'green') {
+      // --- イースターエッグのギミック（鳴き声なし・アニメーションのみ） ---
+      if (modelNumber.toLowerCase() === 'green' || searchTerm.toLowerCase() === 'green') {
         const cat = document.getElementById('black-cat');
-        
-        // アニメーションをリセットして何度でも発動できるようにする
         cat.classList.remove('walking');
         void cat.offsetWidth; 
         cat.classList.add('walking');
         
-        document.getElementById('modelNumber').value = ''; // 検索窓を空にする
-        return; // ここで処理を止める（スプレッドシートやGoogle検索は動かさない）
+        document.getElementById('modelNumber').value = '';
+        document.getElementById('searchTerm').value = '';
+        return; 
       }
-      // ----------------------------------
+      // --------------------------------------------------------------------
 
-      // 1. 通常のGoogle検索を別タブで開く
-      const searchQuery = encodeURIComponent(modelNumber + " 取扱説明書 filetype:pdf");
-      const searchUrl = "https://www.google.com/search?q=" + searchQuery;
+      // 1. DuckDuckGoのダイレクトジャンプ機能
+      let queryText = modelNumber + " 取扱説明書";
+      if (searchTerm !== "") {
+        queryText += " " + searchTerm;
+      } else {
+        queryText += " filetype:pdf";
+      }
+      
+      const searchQuery = encodeURIComponent("!ducky " + queryText);
+      const searchUrl = "https://duckduckgo.com/?q=" + searchQuery;
+      
       window.open(searchUrl, '_blank');
 
       // 2. 裏側でスプレッドシートに記録する
@@ -131,11 +150,15 @@
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: JSON.stringify({ modelNumber: modelNumber })
+        body: JSON.stringify({ 
+          modelNumber: modelNumber,
+          searchTerm: searchTerm
+        })
       }).catch(error => console.error('Error:', error));
       
       // 検索窓を空にする
       document.getElementById('modelNumber').value = '';
+      document.getElementById('searchTerm').value = '';
     });
   </script>
 </body>
