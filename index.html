@@ -105,12 +105,11 @@
     </form>
   </div>
 
-  <!-- 隠し要素の黒猫 -->
   <div id="black-cat">🐈‍⬛</div>
 
   <script>
     // ▼ GASのウェブアプリURLに書き換えてください ▼
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbyoYLzNQgNcz9UEjvPcr_gyAOyeh-1N-u8KY7s-9sVleo-Sl7JWi6AfpPkcsXVrlz_7cg/exec";
+    const GAS_URL = "YOUR_GAS_WEB_APP_URL";
 
     document.getElementById('searchForm').addEventListener('submit', function(e) {
       e.preventDefault();
@@ -118,7 +117,7 @@
       const modelNumber = document.getElementById('modelNumber').value.trim();
       const searchTerm = document.getElementById('searchTerm').value.trim();
       
-      // --- イースターエッグのギミック（鳴き声なし・アニメーションのみ） ---
+      // --- イースターエッグのギミック ---
       if (modelNumber.toLowerCase() === 'green' || searchTerm.toLowerCase() === 'green') {
         const cat = document.getElementById('black-cat');
         cat.classList.remove('walking');
@@ -129,9 +128,9 @@
         document.getElementById('searchTerm').value = '';
         return; 
       }
-      // --------------------------------------------------------------------
+      // ----------------------------------
 
-      // 1. DuckDuckGoのダイレクトジャンプ機能
+      // 1. Google検索に戻す（一番精度が高い）
       let queryText = modelNumber + " 取扱説明書";
       if (searchTerm !== "") {
         queryText += " " + searchTerm;
@@ -139,8 +138,8 @@
         queryText += " filetype:pdf";
       }
       
-      const searchQuery = encodeURIComponent("!ducky " + queryText);
-      const searchUrl = "https://duckduckgo.com/?q=" + searchQuery;
+      const searchQuery = encodeURIComponent(queryText);
+      const searchUrl = "https://www.google.com/search?q=" + searchQuery;
       
       window.open(searchUrl, '_blank');
 
